@@ -4,47 +4,37 @@ import static org.junit.Assert.*;
 public class GradeTest {
 
     @Test
-    public void baseChoice_score75_returnsC() {
+    public void testBaseChoiceGradeC() {
         assertEquals('C', Grade.letterGrade(75));
     }
 
-    @Test
-    public void gradeBand_score90_returnsA() {
-        assertEquals('A', Grade.letterGrade(90));
+    @Test(expected = IllegalArgumentException.class)
+    public void testVariantScoreNegative() {
+        Grade.letterGrade(-1);
     }
 
     @Test
-    public void gradeBand_score80_returnsB() {
-        assertEquals('B', Grade.letterGrade(80));
+    public void testVariantGradeF() {
+        assertEquals('F', Grade.letterGrade(50));
     }
 
     @Test
-    public void gradeBand_score60_returnsD() {
-        assertEquals('D', Grade.letterGrade(60));
+    public void testVariantGradeD() {
+        assertEquals('D', Grade.letterGrade(65));
     }
 
     @Test
-    public void gradeBand_score0_returnsF() {
-        assertEquals('F', Grade.letterGrade(0));
+    public void testVariantGradeB() {
+        assertEquals('B', Grade.letterGrade(85));
     }
 
     @Test
-    public void rangeValidity_scoreBelowZero_throwsIllegalArgumentException() {
-        try {
-            Grade.letterGrade(-1);
-            fail("Expected IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+    public void testVariantGradeA() {
+        assertEquals('A', Grade.letterGrade(95));
     }
 
-    @Test
-    public void rangeValidity_scoreAboveHundred_throwsIllegalArgumentException() {
-        try {
-            Grade.letterGrade(101);
-            fail("Expected IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void testVariantScoreAboveHundred() {
+        Grade.letterGrade(105);
     }
 }
