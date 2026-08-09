@@ -1,0 +1,67 @@
+$ python llm_test_engine.py ArrayMin.java --backend claude
+
+=== ISP / Base Choice Coverage requirements (from LLM) ===
+Method under test: ArrayMin.findMin(int[] arr)
+
+Input Space Partitioning characteristics for parameter `arr`:
+
+C1. Null-ness
+    - B1: NonNull (array reference is not null)
+    - B2: Null (array reference is null)
+
+C2. Length
+    - B1: Empty (length == 0)
+    - B2: Single (length == 1)
+    - B3: Multiple (length >= 2)
+
+C3. Position of the minimum element (meaningful only when length >= 2)
+    - B1: First (minimum is at index 0)
+    - B2: Middle (minimum is at an interior index)
+    - B3: Last (minimum is at the final index)
+
+C4. Duplication of the minimum value
+    - B1: NoDuplicateMin (the minimum value occurs exactly once)
+    - B2: DuplicateMin (the minimum value occurs at 2+ indices)
+
+C5. Sign composition of values
+    - B1: AllPositive (every element > 0)
+    - B2: AllNegative (every element < 0)
+    - B3: Mixed (both positive and negative elements present)
+
+Base choice blocks (most "normal" / typical block per characteristic):
+    C1 = NonNull
+    C2 = Multiple
+    C3 = Middle
+    C4 = NoDuplicateMin
+    C5 = Mixed
+
+Base Choice Coverage (BCC) test requirements:
+
+T1 (Base test): NonNull, Multiple, Middle, NoDuplicateMin, Mixed.
+    e.g. arr = {5, 3, -8, 12, 6} -> min = -8.
+
+T2 (vary C1 -> Null, others held at base where applicable): arr = null -> expect IllegalArgumentException.
+
+T3 (vary C2 -> Empty, others held at base where applicable): arr = {} -> expect IllegalArgumentException.
+
+T4 (vary C2 -> Single, others held at base where applicable): arr = {7} -> expect min = 7.
+
+T5 (vary C3 -> First, C1/C2/C4/C5 held at base): arr = {-9, 3, 8, 12, 6} -> min = -9 (at index 0).
+
+T6 (vary C3 -> Last, C1/C2/C4/C5 held at base): arr = {5, 3, 8, 12, -9} -> min = -9 (at last index).
+
+T7 (vary C4 -> DuplicateMin, C1/C2/C3/C5 held at base): arr = {5, -8, 3, -8, 6} -> min = -8 (occurs twice, position roughly middle, mixed sign).
+
+T8 (vary C5 -> AllPositive, C1/C2/C3/C4 held at base): arr = {5, 3, 1, 12, 6} -> min = 1 (middle index, no duplicate, all positive).
+
+T9 (vary C5 -> AllNegative, C1/C2/C3/C4 held at base): arr = {-5, -3, -8, -1, -6} -> min = -8 (middle index, no duplicate, all negative).
+
+$ javac ... ArrayMinTest.java   (attempt 1)
+(compiled with no warnings)
+
+$ java -cp ... org.junit.runner.JUnitCore ArrayMinTest
+JUnit version 4.13.2
+.........
+Time: 0.011
+
+OK (9 tests)

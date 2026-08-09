@@ -1,0 +1,43 @@
+$ python llm_test_engine.py Grade.java --backend claude
+
+=== ISP / Base Choice Coverage requirements (from LLM) ===
+Class under test: Grade
+Public method under test: public static char letterGrade(int score)
+
+PARAMETER: score (int)
+
+Characteristic 1 — Range Validity (is the value within the legal domain?)
+  Block V1 (valid):        0 <= score <= 100
+  Block V2 (invalid-low):  score < 0
+  Block V3 (invalid-high): score > 100
+
+Characteristic 2 — Grade Band (which letter-grade range the value falls into; only meaningful when Characteristic 1 = V1)
+  Block G1 (A band): 90 <= score <= 100
+  Block G2 (B band): 80 <= score <= 89
+  Block G3 (C band): 70 <= score <= 79   <-- most "normal"/base block
+  Block G4 (D band): 60 <= score <= 69
+  Block G5 (F band): 0  <= score <= 59
+
+BASE CHOICE
+  Most normal block for Characteristic 1: V1 (valid)
+  Most normal block for Characteristic 2: G3 (C band, a mid-range non-boundary band)
+  Base test value: score = 75  -> expected 'C'
+
+BASE CHOICE COVERAGE (BCC) TEST REQUIREMENTS
+  T1 (BASE):                     score = 75  (V1, G3) -> 'C'
+  T2 (vary Grade Band -> G1):    score = 90  (V1, G1) -> 'A'
+  T3 (vary Grade Band -> G2):    score = 80  (V1, G2) -> 'B'
+  T4 (vary Grade Band -> G4):    score = 60  (V1, G4) -> 'D'
+  T5 (vary Grade Band -> G5):    score = 0   (V1, G5) -> 'F'
+  T6 (vary Range Validity -> V2): score = -1  -> IllegalArgumentException
+  T7 (vary Range Validity -> V3): score = 101 -> IllegalArgumentException
+
+$ javac ... GradeTest.java   (attempt 1)
+(compiled with no warnings)
+
+$ java -cp ... org.junit.runner.JUnitCore GradeTest
+JUnit version 4.13.2
+.......
+Time: 0.009
+
+OK (7 tests)
